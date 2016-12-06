@@ -1,9 +1,15 @@
 from django.conf import settings
-from importlib import import_module
+
 from .base import BaseStaticSiteRenderer
 from .disk import DiskStaticSiteRenderer
 from .appengine import GAEStaticSiteRenderer
 from .s3 import S3StaticSiteRenderer
+
+try:
+    from django.utils import importlib
+except ImportError:
+    import importlib
+
 
 __all__ = ('BaseStaticSiteRenderer', 'DiskStaticSiteRenderer',
            'S3StaticSiteRenderer', 'GAEStaticSiteRenderer',
