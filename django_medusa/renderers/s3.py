@@ -31,13 +31,17 @@ def _get_distribution():
 
 
 def _get_bucket():
-    from boto.s3.connection import S3Connection
+    from boto.s3.connection import OrdinaryCallingFormat, S3Connection
+
     conn = S3Connection(
         aws_access_key_id=settings.AWS_ACCESS_KEY,
-        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+        calling_format=OrdinaryCallingFormat()
     )
-    bucket = (settings.MEDUSA_AWS_STORAGE_BUCKET_NAME if settings.MEDUSA_AWS_STORAGE_BUCKET_NAME else settings.AWS_STORAGE_BUCKET_NAME)
-    return conn.get_bucket(bucket)
+
+    bucket_name = (settings.MEDUSA_AWS_STORAGE_BUCKET_NAME if settings.MEDUSA_AWS_STORAGE_BUCKET_NAME else settings.AWS_STORAGE_BUCKET_NAME)
+
+    return conn.get_bucket(bucket_name)
 
 
 def _upload_to_s3(key, file):
@@ -125,13 +129,7 @@ class S3StaticSiteRenderer(BaseStaticSiteRenderer):
         return _s3_render_path((self.client, self.bucket, path, view))
 
     def generate(self):
-        from boto.s3.connection import S3Connection
-
-        self.conn = S3Connection(
-            aws_access_key_id=settings.AWS_ACCESS_KEY,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
-        )
-        self.bucket = (self.conn.get_bucket(settings.MEDUSA_AWS_STORAGE_BUCKET_NAME) if settings.MEDUSA_AWS_STORAGE_BUCKET_NAME else self.conn.get_bucket(settings.AWS_STORAGE_BUCKET_NAME))
+        self.bucket = _get_bucket()
         self.bucket.configure_website("index.html", "500.html")
         self.server_root_path = self.bucket.get_website_endpoint()
 
