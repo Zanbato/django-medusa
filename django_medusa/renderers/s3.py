@@ -71,7 +71,8 @@ def _s3_render_path(args):
 
     # Render the view
     resp = client.get(path)
-    if resp.status_code != 200:
+    # should be 200 OK or 301 PERMANENT REDIRECT
+    if resp.status_code != 200 or resp.status_code != 301:
         raise Exception(
             "Request to %s produced response code %d -- looking for status code 200 (OK)" %
             (path, resp.status_code)
