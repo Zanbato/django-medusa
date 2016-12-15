@@ -18,7 +18,7 @@ __all__ = ('BaseStaticSiteRenderer', 'DiskStaticSiteRenderer',
 
 def get_cls(renderer_name):
     mod_path, cls_name = renderer_name.rsplit('.', 1)
-    mod = import_module(mod_path)
+    mod = importlib.import_module(mod_path)
     return getattr(mod, cls_name)
 
 
