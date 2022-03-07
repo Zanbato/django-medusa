@@ -1,8 +1,5 @@
 from __future__ import print_function
-try:
-    import cStringIO
-except ImportError:  # >=Python 3.
-    from io import StringIO as cStringIO
+from io import BytesIO
 from datetime import timedelta, datetime
 from django.conf import settings
 from django.test.client import Client
@@ -85,7 +82,7 @@ def _s3_render_path(args):
     key = bucket.get_key(outpath) or bucket.new_key(outpath)
     key.content_type = resp['Content-Type']
 
-    temp_file = cStringIO.StringIO(resp.content)
+    temp_file = BytesIO(resp.content)
     md5 = key.compute_md5(temp_file)
 
     # If key is new, there's no etag yet
